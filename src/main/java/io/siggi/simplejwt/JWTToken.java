@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public final class JWTToken {
 	private static final Base64.Decoder decoder = Base64.getUrlDecoder();
+	@SuppressWarnings("deprecation")
+	private static final JsonParser jsonParser = new JsonParser();
 	private final String originalToken;
 	private final String headerString;
 	private final JsonObject header;
@@ -18,6 +20,7 @@ public final class JWTToken {
 	private final String signatureString;
 	private final byte[] signature;
 
+	@SuppressWarnings("deprecation")
 	private JWTToken(String token) {
 		this.originalToken = token;
 		String[] tokenParts = token.split("\\.");
@@ -29,10 +32,10 @@ public final class JWTToken {
 			payloadString = new String(decoder.decode(tokenParts[1]), StandardCharsets.UTF_8);
 			signatureString = tokenParts[2];
 			signature = decoder.decode(tokenParts[2]);
-			header = JsonParser.parseString(headerString).getAsJsonObject();
+			header = jsonParser.parse(headerString).getAsJsonObject();
 			JsonObject payloadObj;
 			try {
-				payloadObj = JsonParser.parseString(payloadString).getAsJsonObject();
+				payloadObj = jsonParser.parse(payloadString).getAsJsonObject();
 			} catch (Exception e) {
 				payloadObj = null;
 			}
